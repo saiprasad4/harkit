@@ -36,7 +36,7 @@ const bodyText = await page.locator("body").textContent();
 const hasRedacted = bodyText?.includes("[REDACTED]") ?? false;
 
 // U+2014 em dash and U+2013 en dash must not appear anywhere in the rendered page.
-const dashes = (bodyText?.match(/[—–]/g) ?? []).length;
+const dashes = (bodyText?.match(/[\u2014\u2013]/g) ?? []).length;
 
 const sanitizeHosts = [...new Set(hosts.slice(afterLoad))].filter(
   (h) => h && h !== new URL(BASE).host,
