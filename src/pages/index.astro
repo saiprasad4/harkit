@@ -1,0 +1,81 @@
+---
+import Base from "../layouts/Base.astro";
+import HarSanitizer from "../components/HarSanitizer.tsx";
+
+const removes = [
+  ["Auth headers", "Authorization, Proxy-Authorization, Cookie, Set-Cookie, X-Api-Key, X-Auth-Token, and any header named for a token, secret, apikey, auth, session, or password."],
+  ["Cookies", "The value of every cookie in request.cookies and response.cookies. The names stay, so you keep the shape."],
+  ["URL tokens", "Query params like access_token, id_token, refresh_token, code, sig, signature, key, and sid, in both queryString and the url."],
+  ["Body tokens", "JWTs and Bearer tokens anywhere in a body, plus sensitive keys inside JSON and form-encoded payloads."],
+  ["PII, optional", "Emails and IPv4 addresses in headers, query, and bodies. Off by default because it is noisy, one toggle to turn on."],
+];
+---
+
+<Base
+  title="HAR sanitizer: strip secrets from a HAR file in your browser"
+  description="Drop a HAR file and strip cookies, auth tokens, and session data out of it entirely in your browser. See what was removed, download the clean HAR. Zero egress. Part of Sealed."
+>
+  <section>
+    <p class="eyebrow">HAR, sanitized locally</p>
+    <h1>Strip the secrets from a HAR file, without uploading it.</h1>
+    <p class="lede">
+      A HAR is a full recording of your browser traffic. It leaks cookies, auth tokens, and session
+      data. Drop one here and every secret gets replaced with <code>[REDACTED]</code> in your tab, then
+      download the clean HAR. Nothing is ever sent.
+    </p>
+    <p class="install"><code>nothing leaves your tab. open the network tab and watch.</code></p>
+  </section>
+
+  <section>
+    <p class="eyebrow">Try it, live in your browser</p>
+    <div class="tool">
+      <HarSanitizer client:load />
+    </div>
+  </section>
+
+  <section>
+    <p class="eyebrow">How it works</p>
+    <ol class="how">
+      <li>
+        <h3>Drop or paste</h3>
+        <p>Give it a <code>.har</code> file from your browser's network tab, by drag and drop, file picker, or paste. It never leaves the page.</p>
+      </li>
+      <li>
+        <h3>Redact in the tab</h3>
+        <p>Pure TypeScript parses the JSON and swaps sensitive values for <code>[REDACTED]</code>, keeping key names and structure so the file still validates as a HAR.</p>
+      </li>
+      <li>
+        <h3>Read the summary, download clean</h3>
+        <p>A green band tells you how many secrets came out across how many requests, itemized by category. Then download the sanitized HAR.</p>
+      </li>
+    </ol>
+  </section>
+
+  <section>
+    <p class="eyebrow">What it removes</p>
+    <ul class="spec">
+      {removes.map(([t, d]) => (
+        <li><span class="t">{t}</span><span>{d}</span></li>
+      ))}
+    </ul>
+  </section>
+
+  <section>
+    <p class="eyebrow">Why HAR sanitizer</p>
+    <ul class="features">
+      <li><b>Provably local</b><span>All redaction is TypeScript running in your tab. Open the network panel: dropping a HAR makes zero requests.</span></li>
+      <li><b>Keeps it valid</b><span>Only values are replaced. Key names and the log.entries structure stay intact, so the clean HAR still opens in any HAR viewer.</span></li>
+      <li><b>Covers the leaks</b><span>Auth headers, cookies, URL tokens, JWTs and Bearer tokens in bodies, and optionally emails and IPs.</span></li>
+      <li><b>No account, no upload</b><span>A single static page. Nothing to sign up for, nothing to leak. Share a HAR for a bug report without leaking your session.</span></li>
+    </ul>
+  </section>
+
+  <section>
+    <p class="eyebrow">Part of Sealed</p>
+    <p class="lede">
+      Sealed is a small suite of provably-local developer tools: the work happens in your browser, and
+      the whole promise is that your data never leaves it.
+    </p>
+    <p class="install"><a href="https://sealedtools.pages.dev">sealedtools.pages.dev →</a></p>
+  </section>
+</Base>
